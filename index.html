@@ -12,6 +12,7 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  align-items: center; /* centers on desktop and mobile */
 }
 header {
   background: linear-gradient(90deg, #004e92, #0a74da);
@@ -20,6 +21,7 @@ header {
   text-align: center;
   font-size: 1.6em;
   font-weight: bold;
+  width: 100%;
 }
 .note {
   text-align: center;
@@ -31,11 +33,10 @@ header {
 main {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
+  justify-content: center; /* centers columns */
   padding: 20px;
   flex: 1;
   max-width: 1200px;
-  margin: auto;
   width: 100%;
 }
 .column {
@@ -125,6 +126,7 @@ footer {
   text-align: center;
   padding: 10px;
   font-size: 0.9em;
+  width: 100%;
 }
 @media(max-width: 768px){
   .column { flex: 1 1 100%; }
@@ -133,7 +135,7 @@ footer {
 </head>
 <body>
 <header>Income Tax Calculator - New Tax Regime</header>
-<div class="note">Calculation is for **individuals below 60 years only** and **New Tax Regime**.</div>
+<div class="note">Calculation is for <strong>individuals below 60 years only</strong> and <strong>New Tax Regime</strong>.</div>
 
 <main>
 <div class="column">
@@ -279,8 +281,15 @@ function calculateTax(){
 function savePDF(){
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF('p','pt','a4');
-  const content = document.getElementById('result').innerHTML;
-  doc.html(content,{callback:function(doc){doc.save('Income_Tax_Calculation.pdf');}});
+  const content = document.querySelector('body');
+  doc.html(content, {
+    callback: function(doc) {
+      doc.save('Income_Tax_Calculation.pdf');
+    },
+    x: 20,
+    y: 20,
+    html2canvas: { scale: 0.9 }
+  });
 }
 </script>
 </body>
