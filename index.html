@@ -1,74 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Income Tax Calculator - New Regime</title>
 <style>
+  /* ===== Premium SAP ERP Oceanic Theme ===== */
   :root {
-    --blue: #0b74c4;
-    --blue-dark: #065a9e;
+    --primary: #0b74c4;
+    --primary-dark: #065a9e;
+    --accent: #e6f0fa;
     --white: #ffffff;
-    --gray: #f5f5f5;
+    --gray-light: #f5f5f5;
+    --gray: #e0e0e0;
+    --text-dark: #1a1a1a;
   }
   body {
-    font-family: Arial, sans-serif;
-    background-color: var(--gray);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--gray-light);
     margin: 0;
     padding: 0;
   }
   header {
-    background-color: var(--blue);
+    background: linear-gradient(90deg, var(--primary-dark), var(--primary));
     color: var(--white);
-    padding: 15px;
+    padding: 20px 10px;
     text-align: center;
-    font-size: 1.4em;
+    font-size: 1.5em;
     font-weight: bold;
+    letter-spacing: 1px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.2);
   }
   main {
-    padding: 15px;
-    padding-bottom: 60px;
+    padding: 20px;
+    padding-bottom: 80px;
+    max-width: 600px;
+    margin: auto;
   }
   label {
     display: block;
-    margin: 10px 0 5px;
-    font-weight: bold;
+    margin-top: 15px;
+    font-weight: 600;
+    color: var(--text-dark);
   }
-  select, input {
+  input, select {
     width: 100%;
     padding: 10px;
-    margin-bottom: 12px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    margin-top: 5px;
+    border-radius: 6px;
+    border: 1px solid var(--gray);
     font-size: 1em;
+  }
+  input[readonly] {
+    background-color: var(--accent);
   }
   button {
     width: 100%;
-    padding: 12px;
-    background-color: var(--blue);
+    padding: 14px;
+    margin-top: 20px;
+    background-color: var(--primary);
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     color: var(--white);
     font-size: 1.1em;
+    font-weight: bold;
     cursor: pointer;
-    margin-bottom: 10px;
+    transition: 0.3s;
   }
   button:hover {
-    background-color: var(--blue-dark);
+    background-color: var(--primary-dark);
   }
   .result {
     background-color: var(--white);
-    padding: 15px;
-    margin-top: 15px;
-    border-radius: 4px;
+    padding: 20px;
+    margin-top: 20px;
+    border-left: 5px solid var(--primary);
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     font-weight: bold;
-    text-align: center;
-    font-size: 1.2em;
+    line-height: 1.5em;
   }
   footer {
-    background-color: var(--blue-dark);
+    background-color: var(--primary-dark);
     color: var(--white);
-    padding: 10px;
+    padding: 12px;
     position: fixed;
     bottom: 0;
     width: 100%;
@@ -81,38 +96,38 @@
 
 <header>Income Tax Calculator - New Regime</header>
 
-<main id="calculator">
-  <label for="fy">Select Financial Year:</label>
-  <select id="fy" onchange="updateStdDeduction()">
+<main>
+  <label for="fy">Select Financial Year</label>
+  <select id="fy" onchange="calculateTax()">
     <option value="fy24">FY 2024–25 (AY 2025–26)</option>
     <option value="fy25">FY 2025–26 (AY 2026–27)</option>
   </select>
 
-  <h3>Income Heads (₹)</h3>
-  <label>Salary Income:</label>
-  <input type="number" id="salary" placeholder="Enter Salary Income" value="0" oninput="updateStdDeduction()" />
+  <h3>Income Sources (₹)</h3>
+  <label>Salary Income</label>
+  <input type="number" id="salary" value="0" oninput="calculateTax()">
 
-  <label>House Property Income:</label>
-  <input type="number" id="house" placeholder="Enter House Property Income" value="0" />
+  <label>House Property Income</label>
+  <input type="number" id="house" value="0" oninput="calculateTax()">
 
-  <label>Business/Profession Income:</label>
-  <input type="number" id="business" placeholder="Enter Business Income" value="0" />
+  <label>Business/Profession Income</label>
+  <input type="number" id="business" value="0" oninput="calculateTax()">
 
-  <label>Capital Gains:</label>
-  <input type="number" id="capital" placeholder="Enter Capital Gains" value="0" />
+  <label>Capital Gains</label>
+  <input type="number" id="capital" value="0" oninput="calculateTax()">
 
-  <label>Other Sources:</label>
-  <input type="number" id="other" placeholder="Enter Other Income" value="0" />
+  <label>Other Income</label>
+  <input type="number" id="other" value="0" oninput="calculateTax()">
 
-  <h3>Deductions Allowed under New Regime (₹)</h3>
-  <label>Standard Deduction:</label>
-  <input type="number" id="stdDeduction" readonly />
+  <h3>Deductions (₹)</h3>
+  <label>Standard Deduction</label>
+  <input type="number" id="stdDeduction" value="75000" readonly>
 
-  <label>Employer NPS Contribution (80CCD(2)):</label>
-  <input type="number" id="nps" value="0" />
+  <label>Employer NPS Contribution (80CCD(2))</label>
+  <input type="number" id="nps" value="0" oninput="calculateTax()">
 
-  <label>Agniveer Corpus Fund Deduction:</label>
-  <input type="number" id="agniveer" value="0" />
+  <label>Agniveer Corpus Fund Deduction</label>
+  <input type="number" id="agniveer" value="0" oninput="calculateTax()">
 
   <button onclick="calculateTax()">Calculate Tax</button>
   <button onclick="savePDF()">Save as PDF</button>
@@ -120,19 +135,10 @@
   <div id="result" class="result" style="display:none;"></div>
 </main>
 
-<footer>
-  Software developed by S World The Complete Accounting Solutions
-</footer>
+<footer>Software developed by S World The Complete Accounting Solutions</footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
 <script>
-function updateStdDeduction() {
-  const salary = parseFloat(document.getElementById('salary').value) || 0;
-  const stdDeduction = salary > 0 ? 75000 : 0;
-  document.getElementById('stdDeduction').value = stdDeduction;
-}
-
 function calculateTax() {
   const fy = document.getElementById('fy').value;
   const salary = parseFloat(document.getElementById('salary').value) || 0;
@@ -146,58 +152,82 @@ function calculateTax() {
   const agniveer = parseFloat(document.getElementById('agniveer').value) || 0;
 
   const totalIncome = salary + house + business + capital + other;
-  const totalDeductions = stdDeduction + nps + agniveer;
-  let taxableIncome = totalIncome - totalDeductions;
+  const totalDeduction = stdDeduction + nps + agniveer;
+  let taxableIncome = totalIncome - totalDeduction;
   if (taxableIncome < 0) taxableIncome = 0;
 
   let tax = 0;
 
-  if (fy === 'fy24') {
-    if (taxableIncome <= 300000) tax = 0;
-    else if (taxableIncome <= 600000) tax = (taxableIncome - 300000) * 0.05;
-    else if (taxableIncome <= 900000) tax = 300000 * 0.05 + (taxableIncome - 600000) * 0.10;
-    else if (taxableIncome <= 1200000) tax = 300000 * 0.05 + 300000 * 0.10 + (taxableIncome - 900000) * 0.15;
-    else if (taxableIncome <= 1500000) tax = 300000 * 0.05 + 300000 * 0.10 + 300000 * 0.15 + (taxableIncome - 1200000) * 0.20;
-    else tax = 300000 * 0.05 + 300000 * 0.10 + 300000 * 0.15 + 300000 * 0.20 + (taxableIncome - 1500000) * 0.30;
-
-  } else if (fy === 'fy25') {
-    if (taxableIncome <= 300000) tax = 0;
-    else if (taxableIncome <= 700000) tax = 0; // Rebate u/s 87A
-    else if (taxableIncome <= 900000) tax = (taxableIncome - 700000) * 0.10;
-    else if (taxableIncome <= 1200000) tax = 200000 * 0.10 + (taxableIncome - 900000) * 0.15;
-    else if (taxableIncome <= 1500000) tax = 200000 * 0.10 + 300000 * 0.15 + (taxableIncome - 1200000) * 0.20;
-    else tax = 200000 * 0.10 + 300000 * 0.15 + 300000 * 0.20 + (taxableIncome - 1500000) * 0.30;
+  // === New Tax Regime Slabs with Marginal Relief 87A ===
+  if(fy === 'fy24') {
+    // FY 2024-25 Slabs
+    const slabs = [
+      {limit: 300000, rate:0},
+      {limit:700000, rate:0.05},
+      {limit:1000000, rate:0.10},
+      {limit:1200000, rate:0.15},
+      {limit:1500000, rate:0.20},
+      {limit:5000000, rate:0.30}
+    ];
+    tax = computeSlabTax(taxableIncome, slabs);
+    // Rebate 87A if taxable income <= 700000
+    if(taxableIncome <= 700000) tax = 0;
+  } else {
+    // FY 2025-26 Slabs
+    const slabs = [
+      {limit:400000, rate:0},
+      {limit:800000, rate:0.05},
+      {limit:1200000, rate:0.10},
+      {limit:1600000, rate:0.15},
+      {limit:2000000, rate:0.20},
+      {limit:2400000, rate:0.25},
+      {limit:Infinity, rate:0.30}
+    ];
+    tax = computeSlabTax(taxableIncome, slabs);
+    // Rebate 87A for taxable income <= 1200000
+    if(taxableIncome <= 1200000) tax = 0;
   }
 
-  tax += tax * 0.04;
+  // Add 4% Health & Education Cess
+  tax += tax*0.04;
 
-  document.getElementById('result').style.display = 'block';
-  document.getElementById('result').innerHTML =
-    `Total Income: ₹${totalIncome.toLocaleString('en-IN')}<br>` +
-    `Deductions: ₹${totalDeductions.toLocaleString('en-IN')}<br>` +
-    `Taxable Income: ₹${taxableIncome.toLocaleString('en-IN')}<br>` +
-    `<hr>` +
-    `Total Tax Payable: ₹${tax.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+  document.getElementById('result').style.display='block';
+  document.getElementById('result').innerHTML=
+    `Total Income: ₹${totalIncome.toLocaleString('en-IN')}<br>`+
+    `Deductions: ₹${totalDeduction.toLocaleString('en-IN')}<br>`+
+    `Taxable Income: ₹${taxableIncome.toLocaleString('en-IN')}<br>`+
+    `<hr>`+
+    `Total Tax Payable: ₹${tax.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2})}`;
 }
 
-async function savePDF() {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ orientation: 'landscape' });
+// Function to compute tax by slab
+function computeSlabTax(income, slabs) {
+  let tax=0, prevLimit=0;
+  for(let slab of slabs){
+    if(income>prevLimit){
+      const taxable = Math.min(income, slab.limit)-prevLimit;
+      tax += taxable*slab.rate;
+      prevLimit = slab.limit;
+    } else break;
+  }
+  return tax;
+}
 
+async function savePDF(){
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({orientation:'landscape'});
   const fyText = document.getElementById('fy').selectedOptions[0].text;
   const resultText = document.getElementById('result').innerText || "No calculation yet.";
-
   doc.setFontSize(16);
-  doc.text("Income Tax Calculation - New Regime", 10, 20);
+  doc.text("Income Tax Calculation - New Regime",10,20);
   doc.setFontSize(12);
-  doc.text(`Financial Year: ${fyText}`, 10, 30);
-  doc.text(resultText, 10, 40);
-
+  doc.text(`Financial Year: ${fyText}`,10,30);
+  doc.text(resultText,10,40);
   doc.save("Income_Tax_Calculation.pdf");
 }
 
-// Initialize standard deduction
-updateStdDeduction();
+// Initialize
+calculateTax();
 </script>
 
 </body>
